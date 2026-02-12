@@ -3,106 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Omegle Clone</title>
+<title>Omegle Web Clone</title>
 <style>
 body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    background-color: #f2f2f2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  margin:0;
+  padding:0;
+  height:100%;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #f2f2f2;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 .chat-container {
-    width: 400px;
-    height: 600px;
-    background: #f2f2f2;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  width: 400px;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  background-color: white;
 }
 
-.status {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    font-size: 14px;
+.status-bar {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  position: relative;
+}
+
+.status-bar button {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  background: #555;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  padding: 2px 8px;
+  cursor: pointer;
 }
 
 .chat-box {
-    flex: 1;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow-y: auto;
-    background: #fff;
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  background-color: #fff;
 }
 
 .message {
-    max-width: 80%;
-    padding: 8px 12px;
-    border-radius: 20px;
-    word-wrap: break-word;
-    font-size: 14px;
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  word-wrap: break-word;
 }
 
 .user {
-    background-color: #a29bfe;
-    color: white;
-    align-self: flex-end;
+  background-color: #6c5ce7;
+  color: white;
+  align-self: flex-end;
 }
 
 .stranger {
-    background-color: #e0e0e0;
-    color: black;
-    align-self: flex-start;
+  background-color: #dfe6e9;
+  color: black;
+  align-self: flex-start;
 }
 
 .input-container {
-    display: flex;
-    border-top: 1px solid #ccc;
-    padding: 5px;
-    background: #f2f2f2;
+  display: flex;
+  border-top: 1px solid #ccc;
+  background: #f2f2f2;
 }
 
 input {
-    flex: 1;
-    border-radius: 20px;
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    outline: none;
-    font-size: 14px;
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 10px 15px;
+  outline: none;
+  font-size: 14px;
 }
 
-button {
-    margin-left: 5px;
-    padding: 10px 20px;
-    border-radius: 20px;
-    border: none;
-    background-color: #333;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
+button.send-btn {
+  margin-left: 5px;
+  border: none;
+  background-color: #333;
+  color: white;
+  border-radius: 20px;
+  padding: 10px 15px;
+  cursor: pointer;
 }
 </style>
 </head>
 <body>
 
 <div class="chat-container">
-    <div class="status">You are now chatting with a random stranger</div>
-    <div class="chat-box" id="chat"></div>
-    <div class="input-container">
-        <input type="text" id="messageInput" placeholder="Type your message...">
-        <button onclick="sendMessage()">Send</button>
-    </div>
+  <div class="status-bar">
+    You are now chatting with a random stranger
+    <button onclick="newChat()">New Chat</button>
+  </div>
+  <div class="chat-box" id="chat"></div>
+  <div class="input-container">
+    <input type="text" id="messageInput" placeholder="Type your message...">
+    <button class="send-btn" onclick="sendMessage()">Send</button>
+  </div>
 </div>
 
 <script>
@@ -111,44 +124,58 @@ const input = document.getElementById("messageInput");
 
 // Predefined stranger messages
 const strangerMessages = [
-    "Message 1",
-    "Message 2",
-    "Message 3",
-    "Message 4",
-    "Message 5"
+  "Message 1",
+  "Message 2",
+  "Message 3",
+  "Message 4",
+  "Message 5"
 ];
+let msgIndex = 0;
 
-let messageIndex = 0;
-
-function sendMessage() {
-    const text = input.value.trim();
-    if(!text) return;
-
-    // Add user's message
-    addMessage(text, "user");
-    input.value = "";
-
-    // Stranger replies after delay
-    if(messageIndex < strangerMessages.length){
-        setTimeout(()=>{
-            addMessage(strangerMessages[messageIndex], "stranger");
-            messageIndex++;
-        }, 1000 + Math.random()*1000); // delay 1-2 sec
-    }
+// Add a message to chat
+function addMessage(text, sender){
+  const div = document.createElement('div');
+  div.className = 'message ' + sender;
+  div.textContent = text;
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function addMessage(text, sender) {
-    const msg = document.createElement("div");
-    msg.className = "message " + sender;
-    msg.textContent = text;
-    chatBox.appendChild(msg);
-    chatBox.scrollTop = chatBox.scrollHeight;
+// Send user's message
+function sendMessage(){
+  const text = input.value.trim();
+  if(!text) return;
+  addMessage(text, 'user');
+  input.value = '';
+  
+  // Stranger replies with delay
+  if(msgIndex < strangerMessages.length){
+    setTimeout(()=>{
+      addMessage(strangerMessages[msgIndex], 'stranger');
+      msgIndex++;
+    }, 1000 + Math.random()*1000);
+  } else {
+    // After all messages, show disconnected
+    setTimeout(()=>{
+      addMessage("*** Stranger disconnected ***", 'stranger');
+    }, 1200);
+  }
 }
 
-// Enter key support
-input.addEventListener("keypress", (e)=>{
-    if(e.key === "Enter") sendMessage();
+// New chat resets everything
+function newChat(){
+  chatBox.innerHTML = '';
+  msgIndex = 0;
+  addMessage("*** Connected to a new stranger ***", 'stranger');
+}
+
+// Press Enter to send
+input.addEventListener('keypress', e=>{
+  if(e.key === 'Enter') sendMessage();
 });
+
+// Start first chat
+addMessage("*** Connected to a stranger ***", 'stranger');
 </script>
 
 </body>

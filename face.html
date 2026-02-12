@@ -5,13 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>3D Scroll Demo</title>
 <style>
-  body { margin:0; overflow-x:hidden; font-family: sans-serif; }
-  #container { width:100vw; height:100vh; display:block; }
+  body { margin:0; font-family: sans-serif; }
+  canvas { display: block; position: fixed; top:0; left:0; z-index:0; }
+  section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    z-index:1;
+    pointer-events: none;
+  }
   .fixed-btn {
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 10;
+    z-index: 2;
     padding: 12px 20px;
     background:#ff4081;
     color:white;
@@ -25,7 +36,10 @@
 <body>
 
 <button class="fixed-btn" onclick="alert('Hi!')">Say Hi</button>
-<div id="container"></div>
+
+<section style="background:rgba(0,0,0,0.3)">Section 1</section>
+<section style="background:rgba(0,0,50,0.3)">Section 2</section>
+<section style="background:rgba(50,0,0,0.3)">Section 3</section>
 
 <script type="module">
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
@@ -38,58 +52,59 @@ const camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHei
 camera.position.set(0, 0, 5);
 
 // Renderer
-const renderer = new THREE.WebGLRenderer({antialias:true});
+const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
-document.getElementById('container').appendChild(renderer.domElement);
+document.body.appendChild(renderer.domElement);
 
-// Orbit Controls
+// Controls
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-// Light
-const light = new THREE.DirectionalLight(0xffffff,1);
-light.position.set(5,5,5);
-scene.add(light);
-scene.add(new THREE.AmbientLight(0x555555));
+// Lights
+scene.add(new THREE.AmbientLight(0x888888));
+const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+dirLight.position.set(5,5,5);
+scene.add(dirLight);
 
-// Load 3D Model
+// Load 3D model
 let model;
 const loader = new GLTFLoader();
-loader.load('https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf',
+loader.load(
+  'https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf',
   (gltf) => {
     model = gltf.scene;
     model.scale.set(2,2,2);
     scene.add(model);
   },
   undefined,
-  (error) => console.error(error)
+  (err) => console.error(err)
 );
 
 // Handle resize
-window.addEventListener('resize', () => {
+window.addEventListener('resize', ()=>{
   camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Scroll Animation
-window.addEventListener('scroll', () => {
+// Scroll animation
+window.addEventListener('scroll', ()=>{
   if(!model) return;
   const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-  model.rotation.y = scrollPercent * Math.PI * 2; // rotate as you scroll
-  model.position.y = -scrollPercent * 2; // move down slightly
-  model.scale.setScalar(2 + scrollPercent); // scale up slightly
+  model.rotation.y = scrollPercent * Math.PI * 4; // rotate a lot
+  model.position.y = -scrollPercent * 5; // move down
+  model.scale.setScalar(2 + scrollPercent*2); // scale up visibly
 });
 
-// Minimal page height to allow scrolling
+// Give page enough height to scroll
 document.body.style.height = '300vh';
 
 // Animate
 function animate(){
   requestAnimationFrame(animate);
   controls.update();
-  renderer.render(scene,camera);
+  renderer.render(scene, camera);
 }
 animate();
 </script>

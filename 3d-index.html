@@ -307,7 +307,7 @@ BABYLON.SceneLoader.Append("", "model/chicken.glb", scene, function(scene) {
     const chicken = scene.meshes[scene.meshes.length - 1]; // last mesh of loaded model
 
     // Place it on the path (middle)
-    chicken.position = new BABYLON.Vector3(0, 0, 100);
+    chicken.position = new BABYLON.Vector3(0, 0, 10);
     
     // Lift chicken a bit based on its bounding box
     const boundingInfo = chicken.getBoundingInfo();
@@ -323,7 +323,7 @@ BABYLON.SceneLoader.Append("", "model/chicken.glb", scene, function(scene) {
     );
 
     // Dynamically scale smaller than the player
-    const playerHeight = 2; // your player's height (digit "9" plane height)
+    const playerHeight = 10; // your player's height (digit "9" plane height)
     const scaleFactor = playerHeight / chickenHeight * 0.5; // 0.5 ensures chicken is smaller
     chicken.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
 });
@@ -333,6 +333,7 @@ BABYLON.SceneLoader.Append("", "model/chicken.glb", scene, function(scene) {
 
 </body>
 </html>
+
 
 
 

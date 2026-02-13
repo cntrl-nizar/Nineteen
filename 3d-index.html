@@ -314,19 +314,11 @@ BABYLON.SceneLoader.Append("", "chicken.glb", scene, function(scene) {
         }
     });
 
-    // Ignore the model’s internal size and set desired height directly
-    const desiredHeight = 1; // 1 unit = smaller than player
-
-    // Compute bounding box after parenting
-    const boundingInfo = chickenRoot.getBoundingInfo();
-    const currentHeight = boundingInfo.boundingBox.extendSize.y * 2;
-
-    // Scale so chicken is exactly desiredHeight
-    const scaleFactor = desiredHeight / currentHeight;
-    chickenRoot.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
+    // Scale the whole chicken
+    chickenRoot.scaling = new BABYLON.Vector3(0.005, 0.005, 0.005); // very small
 
     // Place on path
-    chickenRoot.position = new BABYLON.Vector3(0, desiredHeight / 2, 10);
+    chickenRoot.position = new BABYLON.Vector3(0, 0.5, 10); // adjust Y so it sits on path
 
     // Optional: clickable
     chickenRoot.actionManager = new BABYLON.ActionManager(scene);
@@ -338,7 +330,9 @@ BABYLON.SceneLoader.Append("", "chicken.glb", scene, function(scene) {
 });
 </script>
 
+
 </body>
 </html>
+
 
 

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Camera-Relative Joystick Game</title>
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<style>
+#joystick {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(200,200,200,0.3);
+  touch-action: none;
+}
+#stick {
+  width: 50px;
+  height: 50px;
+  background: rgba(100,100,100,0.7);
+  border-radius: 50%;
+  position: absolute;
+  left: 35px;
+  top: 35px;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+<canvas id="renderCanvas" style="width:100%; height:100vh;"></canvas>
+<div id="joystick">
+  <div id="stick"></div>
+</div>
+
+<!-- Scene & Camera -->
+<script>
+const canvas = document.getElementById("renderCanvas");
+const engine = new BABYLON.Engine(canvas,true);
+const scene = new BABYLON.Scene(engine);
+scene.clearColor = new BABYLON.Color3(0,0,0); // black sky
+
+// Camera setup
+const camera = new BABYLON.ArcRotateCamera("cam",-Math.PI/2,Math.PI/4,8,new BABYLON.Vector3(0,1,0),scene);
+camera.attachControl(canvas,true);
+camera.lowerRadiusLimit = 3;
+camera.upperRadiusLimit = 15;
+
+// Light
+new BABYLON.HemisphericLight("light",new BABYLON.Vector3(0,1,0),scene);
+</script>
+
+
+<!-- Joystick -->
+<script>
+const speed = 0.1;
+const bounds = {minX:-8,maxX:8,minZ:-100,maxZ:100};
+let moveInput = {x:0,y:0};
+
+const joystick = document.getElementById("joystick");
+const stick = document.getElementById("stick");
+let dragging=false;
+const resetStick = ()=>{stick.style.left='35px'; stick.style.top='35px'; moveInput={x:0,y:0};};
+
+joystick.addEventListener('pointerdown',(e)=>{dragging=true; e.target.setPointerCapture(e.pointerId);});
+joystick.addEventListener('pointerup',(e)=>{dragging=false; resetStick();});
+joystick.addEventListener('pointerout',(e)=>{dragging=false; resetStick();});
+joystick.addEventListener('pointermove',(e)=>{
+  if(!dragging) return;
+  const rect = joystick.getBoundingClientRect();
+  let dx = e.clientX - rect.left - rect.width/2;
+  let dy = e.clientY - rect.top - rect.height/2;
+  const maxDist = rect.width/2 - 25;
+  let dist = Math.min(Math.sqrt(dx*dx+dy*dy), maxDist);
+  let angle = Math.atan2(dy, dx);
+  stick.style.left = `${35 + Math.cos(angle)*dist}px`;
+  stick.style.top = `${35 + Math.sin(angle)*dist}px`;
+  moveInput.x = Math.cos(angle)*(dist/maxDist);
+  moveInput.y = -Math.sin(angle)*(dist/maxDist);
+});
+
+// Game loop
+scene.onBeforeRenderObservable.add(()=>{
+    let camForward = camera.getTarget().subtract(camera.position).normalize();
+    camForward.y = 0;
+    let camRight = new BABYLON.Vector3(camForward.z,0,-camForward.x);
+
+    let move = new BABYLON.Vector3.Zero();
+    move.addInPlace(camForward.scale(moveInput.y));
+    move.addInPlace(camRight.scale(moveInput.x));
+
+    if(move.lengthSquared()>0){
+        move.normalize().scaleInPlace(speed);
+        let newPos = player.position.add(move);
+        newPos.x = Math.max(bounds.minX,Math.min(bounds.maxX,newPos.x));
+        newPos.z = Math.max(bounds.minZ,Math.min(bounds.maxZ,newPos.z));
+        player.position.copyFrom(newPos);
+    }
+
+    camera.target.copyFrom(player.position.add(new BABYLON.Vector3(0,1,0)));
+});
+
+engine.runRenderLoop(()=>scene.render());
+window.addEventListener("resize",()=>engine.resize());
+</script>
+
+
+<!-- Player -->
+<script>
+// Player as digit "9"
+const player = new BABYLON.TransformNode("player", scene);
+const plane = BABYLON.MeshBuilder.CreatePlane("playerPlane", {width:1, height:2}, scene);
+plane.parent = player;
+plane.position.y = 1;
+
+const dt = new BABYLON.DynamicTexture("dt", {width:512, height:1024}, scene, false);
+const mat = new BABYLON.StandardMaterial("playerMat", scene);
+mat.diffuseTexture = dt;
+mat.backFaceCulling = false;
+mat.diffuseTexture.hasAlpha = true;
+mat.useAlphaFromDiffuseTexture = true;
+plane.material = mat;
+
+dt.drawText("9", null, 800, "bold 800px Arial", "white", null, true);
+</script>
+
+
+<!-- Path & Floor -->
+<script>
+// Enable collisions globally
+scene.collisionsEnabled = true;
+
+// -------- FLOOR (plain) --------
+const floor = BABYLON.MeshBuilder.CreateGround("floor",{width:20,height:200},scene);
+const floorMat = new BABYLON.StandardMaterial("floorMat",scene);
+floorMat.diffuseColor = new BABYLON.Color3(0.15,0.15,0.15); // neutral dark
+floor.material = floorMat;
+floor.checkCollisions = true;
+
+// -------- PATH --------
+const path = BABYLON.MeshBuilder.CreateGround("path",{width:4,height:200},scene);
+path.position.y = 0.02;
+const pathMat = new BABYLON.StandardMaterial("pathMat",scene);
+pathMat.diffuseColor = new BABYLON.Color3(1,1,1);
+path.material = pathMat;
+path.checkCollisions = true;
+</script>
+
+
+<!-- Stars / Sky -->
+<script>
+
+// Black sky
+scene.clearColor = new BABYLON.Color3(0,0,0);
+
+const starParent = new BABYLON.TransformNode("starParent", scene);
+
+// Keep stars centered on the player so you never reach the edge
+scene.onBeforeRenderObservable.add(()=>{
+    starParent.position.copyFrom(player.position);
+});
+
+const radius = 80; // distance from player
+
+const colors = [
+"#ff9cf0","#ffb3f5","#ff7ae6","#ff5cd6","#ffc2fb",
+"#e38cff","#d070ff","#b266ff","#9a4dff","#c299ff",
+"#7a33ff","#5f1aff","#f2e6ff","#e0ccff",
+"#fff27a","#ffe95c","#ffdf33","#fff599","#fff1b3",
+"#ffd700","#ffcc00","#fff7cc"
+];
+
+for(let i = 0; i < 1000; i++){
+
+    const star = BABYLON.MeshBuilder.CreatePlane("star"+i,{size:2},scene);
+
+    star.parent = starParent;
+    star.isPickable = false;
+    star.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+
+    // TRUE spherical distribution
+    const theta = Math.random() * Math.PI * 2;     // around
+    const phi = Math.acos(2*Math.random() - 1);    // up/down
+
+    star.position = new BABYLON.Vector3(
+        radius * Math.sin(phi) * Math.cos(theta),
+        radius * Math.cos(phi),
+        radius * Math.sin(phi) * Math.sin(theta)
+    );
+
+    const dt = new BABYLON.DynamicTexture("dt"+i,{width:256,height:256},scene,false);
+    const mat = new BABYLON.StandardMaterial("mat"+i,scene);
+
+    mat.diffuseTexture = dt;
+    mat.emissiveColor = new BABYLON.Color3(1,1,1);
+    mat.disableLighting = true;
+    mat.useAlphaFromDiffuseTexture = true;
+    mat.backFaceCulling = false;
+
+    star.material = mat;
+
+    // alternate digits
+    const digit = (i % 2 === 0) ? "1" : "9";
+
+    const color = colors[Math.floor(Math.random()*colors.length)];
+
+    dt.drawText(
+        digit,
+        null,
+        180,
+        "bold 180px Arial",
+        color,
+        null,
+        true
+    );
+}
+
+
+// -------- CLICKABLE MESSAGE --------
+// create mesh
+const clickStar = BABYLON.MeshBuilder.CreatePlane("clickStar",{size:6},scene);
+
+clickStar.parent = starParent;
+clickStar.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+clickStar.position = new BABYLON.Vector3(0, 10, radius - 10);
+clickStar.isPickable = true;
+
+// texture
+const clickDT = new BABYLON.DynamicTexture("clickDT",{width:512,height:256},scene,false);
+const clickMat = new BABYLON.StandardMaterial("clickMat",scene);
+
+clickMat.diffuseTexture = clickDT;
+clickMat.emissiveColor = new BABYLON.Color3(1,1,1);
+clickMat.disableLighting = true;
+clickMat.useAlphaFromDiffuseTexture = true;
+clickMat.backFaceCulling = false;
+
+clickStar.material = clickMat;
+
+// draw text
+clickDT.drawText(
+    "other side",
+    null,
+    160,
+    "bold 120px Arial",
+    "#ffffff",
+    null,
+    true
+);
+
+// make clickable
+clickStar.actionManager = new BABYLON.ActionManager(scene);
+clickStar.actionManager.registerAction(
+    new BABYLON.ExecuteCodeAction(
+        BABYLON.ActionManager.OnPickTrigger,
+        starMessage
+    )
+);
+
+// function to call
+function starMessage(){
+    alert("hi");
+}
+</script>
+
+
+<!-- Clickable Billboard -->
+<script>
+// Create a TransformNode to hold the billboard
+const billboardNode = new BABYLON.TransformNode("billboardNode", scene);
+
+// Create a plane for the billboard
+const billboard = BABYLON.MeshBuilder.CreatePlane("billboard", { width: 3, height: 3 }, scene);
+billboard.parent = billboardNode;
+
+// Position on the right side (quarter along the path)
+billboard.position.x = 3; // right side of path
+billboard.position.y = 1; // slightly above ground
+billboard.position.z = 50; // distance along path
+
+// Make it always face the camera
+billboard.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+
+// Material with image
+const billboardMat = new BABYLON.StandardMaterial("billboardMat", scene);
+billboardMat.diffuseTexture = new BABYLON.Texture("https://akm-img-a-in.tosshub.com/sites/dailyo//resources/202311/copy-of-g2-cover-2091123125338.png?size=*:480", scene); // replace with any URL
+billboardMat.emissiveColor = new BABYLON.Color3(1,1,1); // make it glow a bit
+billboard.material = billboardMat;
+
+// Add click action
+billboard.actionManager = new BABYLON.ActionManager(scene);
+billboard.actionManager.registerAction(
+    new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
+        alert("Hi! You clicked the billboard.");
+    })
+);
+</script>
+
+
+
+<script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
+
+<!-- Chicken Model -->
+<script>
+BABYLON.SceneLoader.Append("model/", "chicken.glb", scene, function(scene) {
+    // Access the loaded mesh
+    const chicken = scene.meshes[scene.meshes.length - 1]; // last mesh of loaded model
+
+    // Place it on the path (middle)
+    chicken.position = new BABYLON.Vector3(0, 0, 100); // x=0 center, z=middle of 200 length path
+    chicken.position.y += 0.5; // lift a bit if needed
+
+    // Optional: make it clickable
+    chicken.actionManager = new BABYLON.ActionManager(scene);
+    chicken.actionManager.registerAction(
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
+            alert("Cluck Cluck!");
+        })
+    );
+
+    // Optional: scale if model is too big/small
+    chicken.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5);
+});
+</script>
+
+
+</body>
+</html>

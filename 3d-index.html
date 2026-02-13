@@ -302,32 +302,33 @@ billboard.actionManager.registerAction(
 
 <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 <script>
-BABYLON.SceneLoader.Append("", "chicken.glb", scene, function(scene) {
-    // Create a root for just the chicken
+BABYLON.SceneLoader.Append("", "model/chicken.glb", scene, function(scene) {
+
+    // Create root node
     const chickenRoot = new BABYLON.TransformNode("chickenRoot", scene);
 
-    // Only parent the meshes that came from the loader (exclude existing scene meshes)
+    // Only parent the meshes from this import
     scene.meshes.forEach(mesh => {
         if (!mesh.parent && mesh.name !== "playerPlane" && mesh.name !== "floor" && mesh.name !== "path") {
             mesh.parent = chickenRoot;
         }
     });
 
-    // Compute original bounding box height
+    // Ignore the model’s internal size and set desired height directly
+    const desiredHeight = 1; // 1 unit = smaller than player
+
+    // Compute bounding box after parenting
     const boundingInfo = chickenRoot.getBoundingInfo();
-    const chickenHeight = boundingInfo.boundingBox.extendSize.y * 2;
+    const currentHeight = boundingInfo.boundingBox.extendSize.y * 2;
 
-    // Player height in world units
-    const playerHeight = 2; // height of the plane “9”
-
-    // Scale chicken smaller than player
-    const scaleFactor = playerHeight * 0.5 / chickenHeight;
+    // Scale so chicken is exactly desiredHeight
+    const scaleFactor = desiredHeight / currentHeight;
     chickenRoot.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
 
-    // Place chicken on the path
-    chickenRoot.position = new BABYLON.Vector3(0, chickenHeight * scaleFactor / 2, 10);
+    // Place on path
+    chickenRoot.position = new BABYLON.Vector3(0, desiredHeight / 2, 10);
 
-    // Make chicken clickable
+    // Optional: clickable
     chickenRoot.actionManager = new BABYLON.ActionManager(scene);
     chickenRoot.actionManager.registerAction(
         new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
@@ -336,5 +337,7 @@ BABYLON.SceneLoader.Append("", "chicken.glb", scene, function(scene) {
     );
 });
 </script>
+
 </body>
 </html>
+

@@ -330,12 +330,12 @@ function starMessage(){
 // position: BABYLON.Vector3 - where to place the billboard
 // size: number - width/height
 // onClick: function - your custom code to run when clicked
-function createBillboard(imgURL, position, size = 3, onClick = () => {}) {
+function createBillboard(imgURL, position, h = 3,w = 3, onClick = () => {}) {
     // Root node for easy manipulation
     const billboardNode = new BABYLON.TransformNode("billboardNode", scene);
 
     // Create plane
-    const billboard = BABYLON.MeshBuilder.CreatePlane("billboard", { width: size, height: size }, scene);
+    const billboard = BABYLON.MeshBuilder.CreatePlane("billboard", { width: w, height: h }, scene);
     billboard.parent = billboardNode;
 
     // Set position
@@ -364,6 +364,7 @@ createBillboard(
     "https://akm-img-a-in.tosshub.com/sites/dailyo//resources/202311/copy-of-g2-cover-2091123125338.png?size=*:480",
     new BABYLON.Vector3(3, 1, 50),
     3,
+    3,
     () => { 
         console.log("Billboard clicked! You can run any code here."); 
         alert("Hi! 1."); 
@@ -374,9 +375,21 @@ createBillboard(
     "https://akm-img-a-in.tosshub.com/sites/dailyo//resources/202311/copy-of-g2-cover-2091123125338.png?size=*:480",
     new BABYLON.Vector3(-3, 1, 0),
     3,
+    3,
     () => { 
         console.log("Billboard clicked! You can run any code here."); 
         alert("Hi! 2."); 
+    }
+);
+
+    createBillboard(
+    "image/door.png",
+    new BABYLON.Vector3(0, 1, 100),
+    2,
+    3,
+    () => { 
+        console.log("Billboard clicked! You can run any code here."); 
+        alert("locked"); 
     }
 );
 </script>
@@ -432,6 +445,7 @@ loadModel("lizard.glb", new BABYLON.Vector3(0, 0.5, -5));
 
 </body>
 </html>
+
 
 
 

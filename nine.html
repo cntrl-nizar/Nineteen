@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Nine</title>
+<title>Camera-Relative Joystick Game</title>
 <script src="https://cdn.babylonjs.com/babylon.js"></script>
 <style>
 #joystick {
@@ -93,12 +93,12 @@ camera.attachControl(canvas,true);
 camera.lowerRadiusLimit = 3;
 camera.upperRadiusLimit = 15;
   
-camera.angularSensibility = 20000; // higher = slower mouse drag
+camera.angularSensibility = 3000; // higher = slower mouse drag
 camera.inertia = 0.95;            // closer to 1 = smoother deceleration
 
-//scene.registerBeforeRender(() => {
-//    camera.alpha += 0.00001; // small value = slow rotation
-//});
+scene.registerBeforeRender(() => {
+    camera.alpha += 0.001; // small value = slow rotation
+});
 // Light
 new BABYLON.HemisphericLight("light",new BABYLON.Vector3(0,1,0),scene);
 </script>
@@ -358,52 +358,48 @@ billboard.actionManager.registerAction(
 // position: BABYLON.Vector3, e.g. new BABYLON.Vector3(4,0.5,4)
 // scale: number, default small (0.005)
 // clickable: boolean, whether clicking shows alert
-// scaleMultiplier: number, multiplies the base scale
-function loadModel(modelName, position, scale = 0.005, clickable = true, scaleMultiplier = 1) {
-    const beforeMeshes = scene.meshes.slice(); // copy existing meshes
-    BABYLON.SceneLoader.Append("model/", modelName, scene, function() {
+function loadModel(modelName, position, scale = 0.005, clickable = true) {
+    BABYLON.SceneLoader.Append("model/", modelName, scene, function(scene) {
 
+        // Create a root node for the imported model
         const modelRoot = new BABYLON.TransformNode(modelName + "Root", scene);
 
-        // Only get newly imported meshes
-        const importedMeshes = scene.meshes.filter(m => !beforeMeshes.includes(m));
-        importedMeshes.forEach(mesh => mesh.parent = modelRoot);
+        // Parent only meshes that are not already part of other objects
+        scene.meshes.forEach(mesh => {
+            if (!mesh.parent && mesh.name !== "playerPlane" && mesh.name !== "floor" && mesh.name !== "path") {
+                mesh.parent = modelRoot;
+            }
+        });
 
-        // Apply base scale multiplied by the new parameter
-        const finalScale = scale * scaleMultiplier;
-        modelRoot.scaling = new BABYLON.Vector3(finalScale, finalScale, finalScale);
+        // Scale the model
+        modelRoot.scaling = new BABYLON.Vector3(scale, scale, scale);
 
+        // Set the model position
         modelRoot.position = position;
 
+        // Optional: make clickable
         if (clickable) {
             modelRoot.actionManager = new BABYLON.ActionManager(scene);
             modelRoot.actionManager.registerAction(
-                new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,
-                    () => { alert(modelName + " clicked!"); })
+                new BABYLON.ExecuteCodeAction(
+                    BABYLON.ActionManager.OnPickTrigger, 
+                    () => { alert(modelName + " clicked!"); }
+                )
             );
         }
     });
 }
 
-// Example usage with scale multiplier:
-loadModel("chicken.glb", new BABYLON.Vector3(0, -0.5, 400), 0.005, true, 0.005); // doubled size
-loadModel("bookshelf.glb", new BABYLON.Vector3(-400, 0.5, 100), 0.005, true, 2000); // 1.5x size
-loadModel("lizard.glb", new BABYLON.Vector3(0, 0.5, 0), 0.005, true, 0.0005); // smaller
-loadModel("tree.glb", new BABYLON.Vector3(200, 0, 200), 0.005, true, 1000); // triple size
-</script>
+// Example usage:
+loadModel("chicken.glb", new BABYLON.Vector3(100, 0.5, 0));
 
+  loadModel("lizard.glb", new BABYLON.Vector3(-10, 0.5, 100));
+</script>
 
 
 
 </body>
 </html>
-
-
-
-
-
-
-
 
 
 

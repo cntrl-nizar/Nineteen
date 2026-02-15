@@ -187,7 +187,7 @@ mat.diffuseTexture.hasAlpha = true;
 mat.useAlphaFromDiffuseTexture = true;
 plane.material = mat;
 
-dt.drawText("9", null, 800, "bold 800px Arial", "white", null, true);
+dt.drawText("1", null, 800, "bold 800px Arial", "white", null, true);
 </script>
 
 
@@ -449,16 +449,23 @@ createBillboard(
     }
 );
 
-    createBillboard(
+createBillboard(
     "image/door.png",
     new BABYLON.Vector3(0, 1, 100),
     4,
     2,
     () => { 
-        console.log("Billboard clicked! You can run any code here."); 
-        alert("locked (0, 1, 100)"); 
+        const password = prompt("Enter password:");
+
+        if (password === "9") {
+            window.location.href = "/owo.html";
+        } else if (password !== null) {
+            alert("WRONG YOU IMPOSTER!!!!!!!!!!");
+        }
+        // If user presses cancel (password === null), do nothing
     }
 );
+
 </script>
 
 

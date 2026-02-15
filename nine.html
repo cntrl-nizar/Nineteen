@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Nine</title>
 <script src="https://cdn.babylonjs.com/babylon.js"></script>
-
+<script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 
 </head>
 <body>
@@ -13,33 +13,10 @@
   <div id="stick"></div>
 </div>
 <!-- Ancient Letter Modal -->
-<div id="ancientModal" style="
-    display:none;
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%, -50%);
-    width:350px;
-    padding:25px;
-    background:#fdf5e6; /* parchment color */
-    border:4px solid #b8860b;
-    box-shadow:0 0 20px #00000088;
-    font-family:'Papyrus', 'cursive';
-    font-size:16px;
-    color:#5b3a00;
-    text-align:center;
-    z-index:10000;
-">
+<div id="ancientModal">
+  
     <p id="ancientModalText"></p>
-    <button id="closeModal" style="
-        margin-top:15px;
-        padding:6px 15px;
-        background:#b8860b;
-        border:none;
-        color:white;
-        cursor:pointer;
-        font-size:14px;
-    ">Close</button>
+    <button id="closeModal">Close</button>
 </div>
 
 <script>
@@ -57,11 +34,6 @@ window.alert = function(message) {
     modal.style.display = "block";
 };
 </script>
-
-
-
-
-
 
 <!-- Player -->
 <script>
@@ -222,41 +194,55 @@ function starMessage(){
 </script>
 
 
-<!-- Clickable Billboard -->
 <script>
-// Create a TransformNode to hold the billboard
-const billboardNode = new BABYLON.TransformNode("billboardNode", scene);
+// Function to create a clickable billboard with custom onclick callback
+// imgURL: string - image URL
+// position: BABYLON.Vector3 - where to place the billboard
+// size: number - width/height
+// onClick: function - your custom code to run when clicked
+function createBillboard(imgURL, position, size = 3, onClick = () => {}) {
+    // Root node for easy manipulation
+    const billboardNode = new BABYLON.TransformNode("billboardNode", scene);
 
-// Create a plane for the billboard
-const billboard = BABYLON.MeshBuilder.CreatePlane("billboard", { width: 3, height: 3 }, scene);
-billboard.parent = billboardNode;
+    // Create plane
+    const billboard = BABYLON.MeshBuilder.CreatePlane("billboard", { width: size, height: size }, scene);
+    billboard.parent = billboardNode;
 
-// Position on the right side (quarter along the path)
-billboard.position.x = 3; // right side of path
-billboard.position.y = 1; // slightly above ground
-billboard.position.z = 50; // distance along path
+    // Set position
+    billboard.position.copyFrom(position);
 
-// Make it always face the camera
-billboard.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+    // Make it always face the camera
+    billboard.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
 
-// Material with image
-const billboardMat = new BABYLON.StandardMaterial("billboardMat", scene);
-billboardMat.diffuseTexture = new BABYLON.Texture("https://akm-img-a-in.tosshub.com/sites/dailyo//resources/202311/copy-of-g2-cover-2091123125338.png?size=*:480", scene); // replace with any URL
-billboardMat.emissiveColor = new BABYLON.Color3(1,1,1); // make it glow a bit
-billboard.material = billboardMat;
+    // Material
+    const billboardMat = new BABYLON.StandardMaterial("billboardMat", scene);
+    billboardMat.diffuseTexture = new BABYLON.Texture(imgURL, scene);
+    billboardMat.emissiveColor = new BABYLON.Color3(1,1,1); // glow
+    billboard.material = billboardMat;
 
-// Add click action
-billboard.actionManager = new BABYLON.ActionManager(scene);
-billboard.actionManager.registerAction(
-    new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
-        alert("Hi!hohohoh.");
-    })
+    // Add click action using the callback
+    billboard.actionManager = new BABYLON.ActionManager(scene);
+    billboard.actionManager.registerAction(
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, onClick)
+    );
+
+    return billboardNode;
+}
+
+// Example usage:
+createBillboard(
+    "https://akm-img-a-in.tosshub.com/sites/dailyo//resources/202311/copy-of-g2-cover-2091123125338.png?size=*:480",
+    new BABYLON.Vector3(3, 1, 50),
+    3,
+    () => { 
+        alert("Hi! onclick()."); 
+    }
 );
 </script>
 
 
 
-<script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
+
 <script>
 // Function to load a model into the scene
 // modelName: string, e.g. "chicken.glb"
@@ -303,6 +289,7 @@ loadModel("chicken.glb", new BABYLON.Vector3(4, 0.5, 4));
 
 </body>
 </html>
+
 
 
 

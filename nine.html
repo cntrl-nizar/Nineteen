@@ -4,29 +4,7 @@
 <meta charset="UTF-8">
 <title>Nine</title>
 <script src="https://cdn.babylonjs.com/babylon.js"></script>
-<style>
-#joystick {
-  position: absolute;
-  bottom: 20px;        /* distance from bottom */
-  left: 20px;          /* distance from left */
-  width: 300px;        /* bigger joystick */
-  height: 300px;
-  border-radius: 50%;
-  background: rgba(200,200,200,0.3);
-  touch-action: none;
-}
 
-#stick {
-  width: 100px;        /* proportional to joystick */
-  height: 100px;
-  background: rgba(100,100,100,0.7);
-  border-radius: 50%;
-  position: absolute;
-  left: 100px;         /* (joystick width - stick width)/2 */
-  top: 100px;          /* (joystick height - stick height)/2 */
-  pointer-events: none;
-}
-</style>
 
 </head>
 <body>
@@ -325,6 +303,7 @@ loadModel("chicken.glb", new BABYLON.Vector3(4, 0.5, 4));
 
 </body>
 </html>
+
 
 
 

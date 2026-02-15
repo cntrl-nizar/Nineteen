@@ -366,7 +366,17 @@ createBillboard(
     3,
     () => { 
         console.log("Billboard clicked! You can run any code here."); 
-        alert("Hi! Custom click works."); 
+        alert("Hi! 1."); 
+    }
+);
+
+  createBillboard(
+    "https://akm-img-a-in.tosshub.com/sites/dailyo//resources/202311/copy-of-g2-cover-2091123125338.png?size=*:480",
+    new BABYLON.Vector3(-3, 1, 0),
+    3,
+    () => { 
+        console.log("Billboard clicked! You can run any code here."); 
+        alert("Hi! 2."); 
     }
 );
 </script>
@@ -422,6 +432,7 @@ loadModel("lizard.glb", new BABYLON.Vector3(0, 0.5, -5));
 
 </body>
 </html>
+
 
 
 

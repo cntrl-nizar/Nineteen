@@ -359,48 +359,42 @@ billboard.actionManager.registerAction(
 // scale: number, default small (0.005)
 // clickable: boolean, whether clicking shows alert
 function loadModel(modelName, position, scale = 0.005, clickable = true) {
-    BABYLON.SceneLoader.Append("model/", modelName, scene, function(scene) {
+    const beforeMeshes = scene.meshes.slice(); // copy existing meshes
+    BABYLON.SceneLoader.Append("model/", modelName, scene, function() {
 
-        // Create a root node for the imported model
         const modelRoot = new BABYLON.TransformNode(modelName + "Root", scene);
 
-        // Parent only meshes that are not already part of other objects
-        scene.meshes.forEach(mesh => {
-            if (!mesh.parent && mesh.name !== "playerPlane" && mesh.name !== "floor" && mesh.name !== "path") {
-                mesh.parent = modelRoot;
-            }
-        });
+        // Only get newly imported meshes
+        const importedMeshes = scene.meshes.filter(m => !beforeMeshes.includes(m));
+        importedMeshes.forEach(mesh => mesh.parent = modelRoot);
 
-        // Scale the model
         modelRoot.scaling = new BABYLON.Vector3(scale, scale, scale);
-
-        // Set the model position
         modelRoot.position = position;
 
-        // Optional: make clickable
         if (clickable) {
             modelRoot.actionManager = new BABYLON.ActionManager(scene);
             modelRoot.actionManager.registerAction(
-                new BABYLON.ExecuteCodeAction(
-                    BABYLON.ActionManager.OnPickTrigger, 
-                    () => { alert(modelName + " clicked!"); }
-                )
+                new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,
+                    () => { alert(modelName + " clicked!"); })
             );
         }
     });
 }
 
+
 // Example usage:
 loadModel("chicken.glb", new BABYLON.Vector3(0, 0.5, 4));
-  loadModel("bookshelf.glb", new BABYLON.Vector3(3, 0.5, 4));
-  loadModel("lizard.glb", new BABYLON.Vector3(6, 0.5, 4));
-  loadModel("tree.glb", new BABYLON.Vector3(12, 0.5, 4));
+loadModel("bookshelf.glb", new BABYLON.Vector3(3, 0.5, 4));
+loadModel("lizard.glb", new BABYLON.Vector3(6, 0.5, 4));
+loadModel("tree.glb", new BABYLON.Vector3(12, 0.5, 4));
+
 </script>
 
 
 
 </body>
 </html>
+
 
 
 

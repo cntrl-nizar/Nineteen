@@ -302,7 +302,7 @@ clickDT.drawText(
     "do not click",
     null,
     160,
-    "bold 120px Arial",
+    "80px Arial",
     "#ffffff",
     null,
     true
@@ -335,7 +335,7 @@ function starMessage() {
     document.body.appendChild(overlay);
 
     let opacity = 0;
-    const duration = 5000; // 5 seconds
+    const duration = 12000; // 1000 = second
     const startTime = performance.now();
 
     function animateDarkening(currentTime) {
@@ -348,9 +348,13 @@ function starMessage() {
 
         if (progress < 1) {
             requestAnimationFrame(animateDarkening);
-        } else {
+        }
+        else if (progress = 1) {
+            requestAnimationFrame(animateDarkening);
+            alert("whatt have youu doneee? Please god have mercy!");
+        }
+        else {
             alert("haha dont worry nothing happened");
-
             // Remove overlay after alert
             overlay.remove();
         }
@@ -483,6 +487,7 @@ loadModel("lizard.glb", new BABYLON.Vector3(0, 0.5, -5));
 
 </body>
 </html>
+
 
 
 

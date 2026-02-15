@@ -358,7 +358,8 @@ billboard.actionManager.registerAction(
 // position: BABYLON.Vector3, e.g. new BABYLON.Vector3(4,0.5,4)
 // scale: number, default small (0.005)
 // clickable: boolean, whether clicking shows alert
-function loadModel(modelName, position, scale = 0.005, clickable = true) {
+// scaleMultiplier: number, multiplies the base scale
+function loadModel(modelName, position, scale = 0.005, clickable = true, scaleMultiplier = 1) {
     const beforeMeshes = scene.meshes.slice(); // copy existing meshes
     BABYLON.SceneLoader.Append("model/", modelName, scene, function() {
 
@@ -368,7 +369,10 @@ function loadModel(modelName, position, scale = 0.005, clickable = true) {
         const importedMeshes = scene.meshes.filter(m => !beforeMeshes.includes(m));
         importedMeshes.forEach(mesh => mesh.parent = modelRoot);
 
-        modelRoot.scaling = new BABYLON.Vector3(scale, scale, scale);
+        // Apply base scale multiplied by the new parameter
+        const finalScale = scale * scaleMultiplier;
+        modelRoot.scaling = new BABYLON.Vector3(finalScale, finalScale, finalScale);
+
         modelRoot.position = position;
 
         if (clickable) {
@@ -381,19 +385,19 @@ function loadModel(modelName, position, scale = 0.005, clickable = true) {
     });
 }
 
-
-// Example usage:
-loadModel("chicken.glb", new BABYLON.Vector3(0, 0.5, 0));
-loadModel("bookshelf.glb", new BABYLON.Vector3(3, 0.5, 4));
-loadModel("lizard.glb", new BABYLON.Vector3(6, 0.5, 9));
-loadModel("tree.glb", new BABYLON.Vector3(12, 0.5, 12));
-
+// Example usage with scale multiplier:
+loadModel("chicken.glb", new BABYLON.Vector3(0, 0.5, 0), 0.005, true, 1); // doubled size
+loadModel("bookshelf.glb", new BABYLON.Vector3(3, 0.5, 4), 0.005, true, 20); // 1.5x size
+loadModel("lizard.glb", new BABYLON.Vector3(6, 0.5, 9), 0.005, true, 1); // smaller
+loadModel("tree.glb", new BABYLON.Vector3(12, 0.5, 12), 0.005, true, 20); // triple size
 </script>
+
 
 
 
 </body>
 </html>
+
 
 
 

@@ -353,37 +353,52 @@ billboard.actionManager.registerAction(
 
 <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 <script>
-BABYLON.SceneLoader.Append("", "chicken.glb", scene, function(scene) {
+// Function to load a model into the scene
+// modelName: string, e.g. "chicken.glb"
+// position: BABYLON.Vector3, e.g. new BABYLON.Vector3(4,0.5,4)
+// scale: number, default small (0.005)
+// clickable: boolean, whether clicking shows alert
+function loadModel(modelName, position, scale = 0.005, clickable = true) {
+    BABYLON.SceneLoader.Append("model/", modelName, scene, function(scene) {
 
-    // Create root node
-    const chickenRoot = new BABYLON.TransformNode("chickenRoot", scene);
+        // Create a root node for the imported model
+        const modelRoot = new BABYLON.TransformNode(modelName + "Root", scene);
 
-    // Only parent the meshes from this import
-    scene.meshes.forEach(mesh => {
-        if (!mesh.parent && mesh.name !== "playerPlane" && mesh.name !== "floor" && mesh.name !== "path") {
-            mesh.parent = chickenRoot;
+        // Parent only meshes that are not already part of other objects
+        scene.meshes.forEach(mesh => {
+            if (!mesh.parent && mesh.name !== "playerPlane" && mesh.name !== "floor" && mesh.name !== "path") {
+                mesh.parent = modelRoot;
+            }
+        });
+
+        // Scale the model
+        modelRoot.scaling = new BABYLON.Vector3(scale, scale, scale);
+
+        // Set the model position
+        modelRoot.position = position;
+
+        // Optional: make clickable
+        if (clickable) {
+            modelRoot.actionManager = new BABYLON.ActionManager(scene);
+            modelRoot.actionManager.registerAction(
+                new BABYLON.ExecuteCodeAction(
+                    BABYLON.ActionManager.OnPickTrigger, 
+                    () => { alert(modelName + " clicked!"); }
+                )
+            );
         }
     });
+}
 
-    // Scale the whole chicken
-    chickenRoot.scaling = new BABYLON.Vector3(0.005, 0.005, 0.005); // very small
-
-    // Place on path
-    chickenRoot.position = new BABYLON.Vector3(4, 0.5, 4); // adjust Y so it sits on path
-
-    // Optional: clickable
-    chickenRoot.actionManager = new BABYLON.ActionManager(scene);
-    chickenRoot.actionManager.registerAction(
-        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
-            alert("Cluck Cluck!");
-        })
-    );
-});
+// Example usage:
+loadModel("chicken.glb", new BABYLON.Vector3(4, 0.5, 4));
 </script>
+
 
 
 </body>
 </html>
+
 
 
 

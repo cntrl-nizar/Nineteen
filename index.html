@@ -404,6 +404,7 @@ closeBook.addEventListener('click', ()=>{
 });
 
 prevArrow.addEventListener('click', ()=>{
+  if(currentPage === 22) { currentPage = 20}
   if(currentPage>0){
     currentPage -= 2;
     updatePages();
@@ -411,6 +412,7 @@ prevArrow.addEventListener('click', ()=>{
 });
 
 nextArrow.addEventListener('click', ()=>{
+  if(currentPage === 18) { currentPage = 20}
   currentPage += 2;
   updatePages();
 });

@@ -180,11 +180,11 @@ body {
 }
 
 #prevArrow {
-  left: -70px;
+  left: 0px;
 }
 
 #nextArrow {
-  right: -70px;
+  right: 0px;
 }
 
 .line {
@@ -199,92 +199,100 @@ body {
     right: 16px;
     font-size: 26px;
     color: #333;
-}
+}  
+/* Keep your original CSS here as default */
 
-/* Add to the end of your CSS */
-
-@media (max-width: 768px) {
-  #bookContainer {
-    width: 90vw;   /* use viewport width */
-    height: 60vh;  /* use viewport height */
-    perspective: 1200px;
-  }
-
-  .book {
-    transform: rotateY(-5deg) rotateX(2deg) scale(0.9);
-  }
-
+/* Responsive adjustments for smaller devices */
+@media (max-width: 1200px) {
   #bookClosed {
-    width: 180px;
-    height: 240px;
-    font-size: 18px;
-    transform: rotateX(10deg) rotateY(-10deg);
+    width: 220px;
+    height: 280px;
+    font-size: 20px;
   }
 
-  #bookClosed::before {
-    transform: translateZ(-4px);
-  }
-  #bookClosed::after {
-    transform: translateZ(-8px);
+  #bookContainer {
+    width: 700px;
+    height: 420px;
   }
 
   .page {
-    padding: 12px;
+    padding: 16px;
     font-size: 12px;
   }
 
   .arrow {
     width: 40px;
     height: 40px;
-    font-size: 24px;
-  }
-
-  #prevArrow {
-    left: -50px;
-  }
-
-  #nextArrow {
-    right: -50px;
+    font-size: 28px;
   }
 
   #closeBook {
     font-size: 24px;
-    top: 8px;
-    right: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  #bookClosed {
+    width: 180px;
+    height: 230px;
+    font-size: 16px;
   }
 
-  .pageNumber {
-    font-size: 18px;
-    bottom: 4px;
-    right: 8px;
+  #bookContainer {
+    width: 90%;
+    height: 60vh;
+  }
+
+  .page {
+    padding: 12px;
+    font-size: 10px;
+  }
+
+  .arrow {
+    width: 35px;
+    height: 35px;
+    font-size: 24px;
+  }
+
+  #closeBook {
+    font-size: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  #bookContainer {
-    height: 50vh;
-  }
-
-  .book {
-    transform: rotateY(-3deg) rotateX(1deg) scale(0.8);
-  }
-
   #bookClosed {
     width: 140px;
+    height: 180px;
+    font-size: 14px;
+  }
+
+  #bookContainer {
+    width: 300px;
     height: 200px;
-    font-size: 16px;
   }
 
   .page {
-    font-size: 10px;
-    padding: 8px;
+    padding: 12px;
+    font-size: 9px;
   }
 
   .arrow {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     font-size: 20px;
   }
+
+  #closeBook {
+    font-size: 18px;
+  }
+  .Page0 {
+  display: flex;               /* enable flexbox */
+  justify-content: center;     /* center horizontally */
+  align-items: center;         /* center vertically */
+     height: 100%;               /* full viewport height (or set a specific height) */
+  text-align: center;          /* optional, for multi-line text */
+      font-size:  large;
+}
 }
 </style>
 </head>

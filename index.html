@@ -368,6 +368,7 @@ function generateLines(){
   return content;
 }
 
+
 function updatePages(){
   if(currentPage === 40)
   {
@@ -385,7 +386,32 @@ function updatePages(){
 	  { leftPage.innerHTML = `<div class="Page0">Written By God</div>` + `<div class="pageNumber">${currentPage}</div>`;
 	  }
 	  else if(currentPage === 30)
-	  { leftPage.innerHTML = `<a href="envelope.html">what is this should i click?</a>` + `<div class="pageNumber">${currentPage}</div>`;
+	  { leftPage.innerHTML = `<div style="position: relative;width: 100%;height: 100%;/* border: 2px solid #333; */overflow: hidden;">
+  <a href="#message" style="display: block;width: 100%;height: 100%;text-decoration: none;color: inherit;">
+    <div style="
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60%;
+      height: 60%;
+      transform: translate(-50%, -50%) rotate(20deg);
+      background: radial-gradient(circle, #00000080 40%, black 100%);
+      clip-path: polygon(70% 4%, 72% 96%, 95% 41%, 108% 60%, 80% 74%, 38% 88%, 62% 109%, 40% 80%, 69% 70%, 30% 50%, -108% 30%, 36% 24%);
+      pointer-events: none;
+    "></div>
+    <span style="
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    color: #000000cc;       /* optional soft white */
+    text-shadow: 1px 4px 0px #0000002b, -3px 3px 0px #000000b0;  /* soft glow / blurry effect */
+">
+      should I click here?
+    </span>
+  </a>
+</div>` + `<div class="pageNumber">${currentPage}</div>`;
 	  }
 	  else
 	  { leftPage.innerHTML = generateLines(18) + `<div class="pageNumber">${currentPage}</div>`;

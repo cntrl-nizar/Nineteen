@@ -471,3 +471,138 @@ nextArrow.addEventListener('click', () => {
 </body>
 </html>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+/* Divine sky container */
+.divine-sky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #0a0a1a, #1a1a3a);
+  overflow: hidden;
+  z-index: -1;
+  font-family: sans-serif;
+}
+
+/* Floating numbers */
+.number {
+  position: absolute;
+  font-weight: bold;
+  animation: float 15s linear infinite;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* Float animation */
+@keyframes float {
+  0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+
+/* Clouds */
+.cloud {
+  position: absolute;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+  filter: blur(20px);
+  animation: moveClouds linear infinite;
+}
+
+/* Cloud movement */
+@keyframes moveClouds {
+  0% { transform: translateX(-20%); }
+  100% { transform: translateX(120%); }
+}
+</style>
+<script>
+window.addEventListener('load', function() {
+  // Create container
+  const sky = document.createElement('div');
+  sky.className = 'divine-sky';
+  document.body.appendChild(sky);
+
+  // Cloud shapes
+  const cloudsData = [
+    {w:150,h:50,top:'20%',dur:120},
+    {w:200,h:60,top:'50%',dur:180},
+    {w:100,h:40,top:'70%',dur:100}
+  ];
+
+  cloudsData.forEach(cloud => {
+    const c = document.createElement('div');
+    c.className = 'cloud';
+    c.style.width = cloud.w + 'px';
+    c.style.height = cloud.h + 'px';
+    c.style.top = cloud.top;
+    c.style.animationDuration = cloud.dur + 's';
+    sky.appendChild(c);
+  });
+
+  // Floating numbers
+ const colors = [
+  // Warm tones
+  '#ff3f3f', // red
+  '#ff5a00', // orange
+  '#ff8c00', // deep orange
+  '#ffd700', // gold
+  '#ff69b4', // pink
+  '#ffa500', // bright orange
+  '#ff4500', // orange red
+  '#ff7f50', // coral
+
+  // Cool tones
+  '#1e90ff', // dodger blue
+  '#00bfff', // deep sky blue
+  '#4169e1', // royal blue
+  '#00008b', // dark blue
+  '#191970', // midnight blue
+  '#4b0082', // indigo
+  '#6a5acd', // slate blue
+  '#483d8b', // dark slate blue
+
+  // Purples / mystical
+  '#8a2be2', // blue violet
+  '#9400d3', // dark violet
+  '#9932cc', // dark orchid
+  '#ba55d3', // medium orchid
+
+  // Gradient-like shades (can mix manually)
+  '#ff7f50', // coral-orange
+  '#ff1493', // deep pink
+  '#ff6347', // tomato
+  '#7fffd4', // aquamarine
+  '#40e0d0', // turquoise
+  '#87cefa', // light sky blue
+  '#dda0dd', // plum
+  '#dda0dd', // lavender
+  '#7b68ee', // medium slate blue
+];
+  for (let i=0;i<50;i++){
+    const n = document.createElement('div');
+    n.className = 'number';
+    n.innerText = Math.random() > 0.5 ? '1' : '9';
+    n.style.left = Math.random() * 100 + 'vw';
+    n.style.top = Math.random() * 100 + 'vh';
+    n.style.color = colors[Math.floor(Math.random()*colors.length)];
+    n.style.animationDuration = (10 + Math.random()*20) + 's';
+    n.style.fontSize = (10 + Math.random()*20) + 'px';
+    sky.appendChild(n);
+  }
+});
+</script>
+

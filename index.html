@@ -22,14 +22,14 @@
 <style>
 body {
   margin: 0;
-  min-height: 100vh;
+  height: 100vh;
   background: radial-gradient(circle at center, #1a1a1a, #000000);
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: 'Garamond', serif;
 
-  /* FIX: prevent horizontal clipping but allow vertical breathing */
+  /* prevent iOS clipping */
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -40,12 +40,13 @@ body {
   align-items: center;
   height: 100%;
   text-align: center;
-  font-size: xx-large;
+  font-size: 20px;
 }
 
+/* Closed book */
 #bookClosed {
-  width: 280px;
-  height: 360px;
+  width: 220px;
+  height: 300px;
   background: linear-gradient(145deg, #8b5e3c 0%, #5a3c23 100%);
   box-shadow: 0 16px 60px rgba(0,0,0,0.9), inset 0 0 15px rgba(255,255,255,0.05);
   color: #ffd700;
@@ -55,61 +56,60 @@ body {
   cursor: pointer;
   border-radius: 8px;
   font-weight: bold;
-  font-size: 24px;
+  font-size: 20px;
   text-shadow: 1px 1px 3px #000;
   border: 3px solid #a87e3b;
-  transform: rotateX(15deg) rotateY(-20deg);
+
+  /* reduced 3D for safety */
+  transform: rotateX(10deg) rotateY(-10deg);
   perspective: 1000px;
   position: relative;
 }
 
-#bookClosed::before {
-  content: '';
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(145deg, #7a4e2b 0%, #4a2f1a 100%);
-  border-radius: 8px;
-  z-index: -50;
-  transform: translateZ(-6px);
-}
-
+#bookClosed::before,
 #bookClosed::after {
   content: '';
   position: absolute;
-  top: 10px;
-  left: 10px;
   width: 100%;
   height: 100%;
-  background: linear-gradient(145deg, #6a3d1a 0%, #3a2510 100%);
   border-radius: 8px;
-  z-index: -50;
-  transform: translateZ(-12px);
+  z-index: -1;
 }
 
-/* FIX: add padding to avoid clipping on iOS */
+#bookClosed::before {
+  top: 5px;
+  left: 5px;
+  background: linear-gradient(145deg, #7a4e2b, #4a2f1a);
+}
+
+#bookClosed::after {
+  top: 10px;
+  left: 10px;
+  background: linear-gradient(145deg, #6a3d1a, #3a2510);
+}
+
+/* Overlay */
 #bookOverlay {
   position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 40%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
 
+  /* important for iPhone */
   padding: 20px;
   box-sizing: border-box;
 }
 
-/* FIX: responsive container instead of fixed size */
+/* HARD FIXED BOOK SIZE (fits <=400px screens) */
 #bookContainer {
-  width: 90vw;
-  height: 65vh;
-  max-width: 800px;
-  max-height: 500px;
-  perspective: 2500px;
+  width: 360px;
+  height: 240px;
+  perspective: 2000px;
   position: relative;
 }
 
@@ -119,8 +119,8 @@ body {
   display: flex;
   transform-style: preserve-3d;
 
-  /* slightly reduced for better mobile behavior */
-  transform: rotateY(-10deg) rotateX(5deg);
+  /* safe transform (no clipping) */
+  transform: rotateY(-6deg) rotateX(2deg);
 
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
@@ -130,36 +130,30 @@ body {
   height: 100%;
   background: #fef5e0;
   border-radius: 3px;
-  padding: 24px;
-  font-size: 14px;
+  padding: 12px;
+  font-size: 11px;
   position: relative;
-  box-shadow: inset 0 0 15px rgba(0,0,0,0.2), 2px 0 10px rgba(0,0,0,0.2);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
   overflow: hidden;
 }
 
 .page.left {
   border-right: 2px solid #b59e7d;
-  z-index: 2;
 }
 
 .page.right {
   border-left: 2px solid #b59e7d;
-  z-index: 2;
-  position: relative;
-  background: #fef5e0;
 }
 
 .page.right.ripped::after {
   content: '';
   position: absolute;
   top: 0;
-  left: -15px;
-  width: 30%;
+  left: -10px;
+  width: 25%;
   height: 100%;
-  background: repeating-linear-gradient(174deg, rgb(0 0 0) 0, rgb(255 255 255) 4px, #00000000 5px);
+  background: repeating-linear-gradient(174deg, black 0, white 4px, transparent 5px);
   clip-path: polygon(0% 0%, 95% 0%, 100% 5%, 85% 10%, 92% 20%, 80% 30%, 90% 40%, 75% 50%, 85% 60%, 70% 70%, 80% 80%, 60% 90%, 75% 100%, 0% 100%);
-  transform: rotate(2deg);
-  z-index: 3;
 }
 
 #behindPage {
@@ -169,18 +163,17 @@ body {
   width: 50%;
   height: 100%;
   background: #fef5e0;
-  padding: 24px;
-  box-shadow: inset 0 0 15px rgba(0,0,0,0.2);
-  z-index: 0;
+  padding: 12px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
   border-left: 2px solid #b59e7d;
   display: none;
 }
 
 #closeBook {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  font-size: 28px;
+  top: 5px;
+  right: 8px;
+  font-size: 22px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -192,86 +185,28 @@ body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 36px;
+  font-size: 22px;
   color: white;
-  background: rgba(0, 0, 0, 0.3);
-  width: 50px;
-  height: 50px;
+  background: rgba(0,0,0,0.3);
+  width: 35px;
+  height: 35px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   z-index: 20;
   user-select: none;
-  padding-top: 20px;
-  padding-bottom: 20px;
 }
 
-#prevArrow { left: 0px; }
-#nextArrow { right: 0px; }
-
-.line {
-  height: 2px;
-  background: #d1c4b2;
-  margin: 6px 0;
-}
+#prevArrow { left: -5px; }
+#nextArrow { right: -5px; }
 
 .pageNumber {
   position: absolute;
-  bottom: 8px;
-  right: 16px;
-  font-size: 26px;
+  bottom: 4px;
+  right: 10px;
+  font-size: 14px;
   color: #333;
-}
-
-/* Tablet */
-@media (max-width: 768px) {
-  .page {
-    padding: 12px;
-    font-size: 10px;
-  }
-
-  .arrow {
-    width: 35px;
-    height: 35px;
-    font-size: 24px;
-  }
-}
-
-/* Mobile (iPhone fix) */
-@media (max-width: 480px) {
-  #bookContainer {
-    width: 95vw;
-    height: 60vh;
-
-    /* key fix: scale instead of forcing layout */
-    transform: scale(0.9);
-    transform-origin: center;
-  }
-
-  .book {
-    /* reduce 3D intensity to avoid clipping */
-    transform: rotateY(-5deg) rotateX(2deg);
-  }
-
-  .page {
-    padding: 10px;
-    font-size: 9px;
-  }
-
-  .arrow {
-    width: 30px;
-    height: 30px;
-    font-size: 20px;
-  }
-
-  #closeBook {
-    font-size: 18px;
-  }
-
-  .Page0 {
-    font-size: large;
-  }
 }
 </style>
 	

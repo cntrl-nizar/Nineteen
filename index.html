@@ -284,8 +284,8 @@ function generateLines(){
 function updatePages(){
   if(currentPage === 40)
   {
-      leftPage.innerHTML = generateLines(18) + '<div class="pageNumber">40</div>';
-      rightPage.innerHTML = `<div class="Page0">End</div>` + `<div class="pageNumber">end</div>`;
+      leftPage.innerHTML = generateLines(18) + '<div class="pageNumber">∞</div>';
+      rightPage.innerHTML = `<div>Gave them free will. Not so they’d always choose right——but so when chosen, would mean something...</div>` + `<div class="pageNumber"></div>`;
   }
   else if(currentPage === 18){
     leftPage.innerHTML = generateLines(18) + '<div class="pageNumber">18</div>';

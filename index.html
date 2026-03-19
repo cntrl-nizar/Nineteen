@@ -20,25 +20,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Book of God</title>
 <style>
-
 body {
   margin: 0;
-  height: 100vh;
+  min-height: 100vh;
   background: radial-gradient(circle at center, #1a1a1a, #000000);
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: 'Garamond', serif;
-  overflow: hidden;
+
+  /* FIX: prevent horizontal clipping but allow vertical breathing */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
+
 .Page0 {
-  display: flex;               /* enable flexbox */
-  justify-content: center;     /* center horizontally */
-  align-items: center;         /* center vertically */
-     height: 100%;               /* full viewport height (or set a specific height) */
-  text-align: center;          /* optional, for multi-line text */
-      font-size: xx-large;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  font-size: xx-large;
 }
+
 #bookClosed {
   width: 280px;
   height: 360px;
@@ -59,7 +63,6 @@ body {
   position: relative;
 }
 
-/* Add 3D thickness layers to the closed book */
 #bookClosed::before {
   content: '';
   position: absolute;
@@ -72,6 +75,7 @@ body {
   z-index: -50;
   transform: translateZ(-6px);
 }
+
 #bookClosed::after {
   content: '';
   position: absolute;
@@ -85,6 +89,7 @@ body {
   transform: translateZ(-12px);
 }
 
+/* FIX: add padding to avoid clipping on iOS */
 #bookOverlay {
   position: fixed;
   inset: 0;
@@ -93,11 +98,17 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+
+  padding: 20px;
+  box-sizing: border-box;
 }
 
+/* FIX: responsive container instead of fixed size */
 #bookContainer {
-  width: 800px;
-  height: 500px;
+  width: 90vw;
+  height: 65vh;
+  max-width: 800px;
+  max-height: 500px;
   perspective: 2500px;
   position: relative;
 }
@@ -107,7 +118,10 @@ body {
   height: 100%;
   display: flex;
   transform-style: preserve-3d;
+
+  /* slightly reduced for better mobile behavior */
   transform: rotateY(-10deg) rotateX(5deg);
+
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
@@ -136,16 +150,16 @@ body {
 }
 
 .page.right.ripped::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -15px;
-    width: 30%;
-    height: 100%;
-    background: repeating-linear-gradient(174deg, rgb(0 0 0) 0, rgb(255 255 255) 4px, #00000000 5px);
-    clip-path: polygon(0% 0%, 95% 0%, 100% 5%, 85% 10%, 92% 20%, 80% 30%, 90% 40%, 75% 50%, 85% 60%, 70% 70%, 80% 80%, 60% 90%, 75% 100%, 0% 100%);
-    transform: rotate(2deg);
-    z-index: 3;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -15px;
+  width: 30%;
+  height: 100%;
+  background: repeating-linear-gradient(174deg, rgb(0 0 0) 0, rgb(255 255 255) 4px, #00000000 5px);
+  clip-path: polygon(0% 0%, 95% 0%, 100% 5%, 85% 10%, 92% 20%, 80% 30%, 90% 40%, 75% 50%, 85% 60%, 70% 70%, 80% 80%, 60% 90%, 75% 100%, 0% 100%);
+  transform: rotate(2deg);
+  z-index: 3;
 }
 
 #behindPage {
@@ -175,32 +189,26 @@ body {
 }
 
 .arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 36px;
-    color: white;
-    background: rgba(0, 0, 0, 0.3);
-    /* border-radius: 50%; */
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    z-index: 20;
-    user-select: none;
-    padding-top: 20px;
-    padding-bottom: 20px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 36px;
+  color: white;
+  background: rgba(0, 0, 0, 0.3);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 20;
+  user-select: none;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
-#prevArrow {
-  left: 0px;
-}
-
-#nextArrow {
-  right: 0px;
-}
+#prevArrow { left: 0px; }
+#nextArrow { right: 0px; }
 
 .line {
   height: 2px;
@@ -209,55 +217,15 @@ body {
 }
 
 .pageNumber {
-    position: absolute;
-    bottom: 8px;
-    right: 16px;
-    font-size: 26px;
-    color: #333;
-}  
-/* Keep your original CSS here as default */
-
-/* Responsive adjustments for smaller devices */
-@media (max-width: 1200px) {
-  #bookClosed {
-    width: 220px;
-    height: 280px;
-    font-size: 20px;
-  }
-
-  #bookContainer {
-    width: 700px;
-    height: 420px;
-  }
-
-  .page {
-    padding: 16px;
-    font-size: 12px;
-  }
-
-  .arrow {
-    width: 40px;
-    height: 40px;
-    font-size: 28px;
-  }
-
-  #closeBook {
-    font-size: 24px;
-  }
+  position: absolute;
+  bottom: 8px;
+  right: 16px;
+  font-size: 26px;
+  color: #333;
 }
 
+/* Tablet */
 @media (max-width: 768px) {
-  #bookClosed {
-    width: 180px;
-    height: 230px;
-    font-size: 16px;
-  }
-
-  #bookContainer {
-    width: 90%;
-    height: 60vh;
-  }
-
   .page {
     padding: 12px;
     font-size: 10px;
@@ -268,26 +236,26 @@ body {
     height: 35px;
     font-size: 24px;
   }
-
-  #closeBook {
-    font-size: 20px;
-  }
 }
 
+/* Mobile (iPhone fix) */
 @media (max-width: 480px) {
-  #bookClosed {
-    width: 140px;
-    height: 180px;
-    font-size: 14px;
+  #bookContainer {
+    width: 95vw;
+    height: 60vh;
+
+    /* key fix: scale instead of forcing layout */
+    transform: scale(0.9);
+    transform-origin: center;
   }
 
-  #bookContainer {
-    width: 300px;
-    height: 200px;
+  .book {
+    /* reduce 3D intensity to avoid clipping */
+    transform: rotateY(-5deg) rotateX(2deg);
   }
 
   .page {
-    padding: 12px;
+    padding: 10px;
     font-size: 9px;
   }
 
@@ -300,16 +268,13 @@ body {
   #closeBook {
     font-size: 18px;
   }
+
   .Page0 {
-  display: flex;               /* enable flexbox */
-  justify-content: center;     /* center horizontally */
-  align-items: center;         /* center vertically */
-     height: 100%;               /* full viewport height (or set a specific height) */
-  text-align: center;          /* optional, for multi-line text */
-      font-size:  large;
-}
+    font-size: large;
+  }
 }
 </style>
+	
 </head>
 <body>
 

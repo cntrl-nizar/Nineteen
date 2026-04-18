@@ -271,12 +271,7 @@ closeBtn.addEventListener('click', () => {
 
 <script>
 function randomColor() {
-  const colors = [
-    "#ff9ecb", // light pink
-    "#ffb38a", // soft orange
-    "#8ad6ff", // light blue
-    "#a8ffb0"  // light green
-  ];
+  const colors = ["#ff9ecb","#ffb38a","#8ad6ff","#a8ffb0"];
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
@@ -306,15 +301,43 @@ function createDigit(x, y) {
   setTimeout(() => el.remove(), 900);
 }
 
-// throttle for performance
+// throttle
 let lastTime = 0;
+let lastX = 0;
+let lastY = 0;
+let trailTimer = null;
 
-function handleMove(x, y) {
+function spawn(x, y) {
   const now = Date.now();
   if (now - lastTime < 25) return;
   lastTime = now;
 
   createDigit(x, y);
+}
+
+// when moving
+function handleMove(x, y) {
+  lastX = x;
+  lastY = y;
+
+  spawn(x, y);
+
+  // reset trail timer
+  clearTimeout(trailTimer);
+
+  // keep spawning for 1s after stopping
+  trailTimer = setTimeout(() => {
+    let start = Date.now();
+
+    const trailInterval = setInterval(() => {
+      spawn(lastX, lastY);
+
+      if (Date.now() - start > 1000) {
+        clearInterval(trailInterval);
+      }
+    }, 30);
+
+  }, 0);
 }
 
 // mouse
